@@ -7,9 +7,14 @@ A full-stack AI Purchasing Agent system built for quick-commerce and retail supp
 ## 🎥 Working Demo Recording
 
 A full video walkthrough demonstrating the application in action:
-* **[Watch Demo Recording Video](demo_recording.mp4)**
 
 https://github.com/user-attachments/assets/demo_recording.mp4
+
+* **[Direct Video Link / Watch Raw MP4](https://github.com/hansikadev/Rappi_assign/raw/main/demo_recording.mp4)**
+
+<video width="100%" controls>
+  <source src="demo_recording.mp4" type="video/mp4">
+</video>
 
 ---
 
