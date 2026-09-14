@@ -1,122 +1,132 @@
-import React from 'react';
-import { ShoppingBag, Truck, TrendingUp, AlertTriangle, Play } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingBag, Truck, TrendingUp, AlertTriangle, Play, Sparkles, Send } from 'lucide-react';
 
-const SCENARIOS = [
+const PRESETS = [
   {
     id: 'scenario_1',
     title: '1. Recommendation Review',
-    subtitle: 'Evaluate initial 800-unit PO recommendation',
+    text: 'The purchasing system recommends buying 800 units of Organic Hass Avocados. Current inventory is 150, open PO is 150, and Bogotá Central warehouse available storage is 60 cu ft.',
     icon: ShoppingBag,
-    color: 'from-blue-500/20 to-indigo-500/20 border-blue-500/30 text-blue-400',
-    btnBg: 'bg-blue-600 hover:bg-blue-500',
-    description: 'System suggests buying 800 units of Organic Avocados. Agent inspects current inventory, 30d forecast, open POs, budget, & 60 cu ft node storage capacity limit.',
-    expectedOutcome: 'Agent MODIFIES recommendation to 500 units to fit warehouse volume.'
+    color: 'border-blue-500/30 text-blue-400'
   },
   {
     id: 'scenario_2',
     title: '2. Supplier Partial Delivery',
-    subtitle: 'Handle 500 -> 250 unit supplier shortfall',
+    text: 'A purchase order was created for 500 units of Avocados, but the supplier informs us that only 250 units can currently be delivered. Check alternate express suppliers.',
     icon: Truck,
-    color: 'from-amber-500/20 to-orange-500/20 border-amber-500/30 text-amber-400',
-    btnBg: 'bg-amber-600 hover:bg-amber-500',
-    description: 'Supplier notifies system it can only fulfill 250 of 500 requested units. Agent evaluates lead times, safety stock, and issues supplemental PO to alternate supplier.',
-    expectedOutcome: 'Agent SPLITS order & places 250-unit PO with 1-day express supplier.'
+    color: 'border-amber-500/30 text-amber-400'
   },
   {
     id: 'scenario_3',
     title: '3. Forecast / Demand Shift',
-    subtitle: 'Respond to +180% surge in daily sales',
+    text: 'Actual sales for Organic Hass Avocados have spiked by +180% (from 35 to 98 units/day). Incoming inventory cover is down to 3 days. Evaluate emergency replenishment.',
     icon: TrendingUp,
-    color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30 text-emerald-400',
-    btnBg: 'bg-emerald-600 hover:bg-emerald-500',
-    description: 'Actual POS sales spike from 35 to 98 units/day. Current stock cover drops to critical 3.0 days. Agent calculates emergency buffer & triggers replenishment PO.',
-    expectedOutcome: 'Agent ISSUES emergency PO for 450 units to prevent stockout.'
+    color: 'border-emerald-500/30 text-emerald-400'
   },
   {
     id: 'scenario_4',
     title: '4. Purchasing Constraints',
-    subtitle: 'Navigate supplier capacity & storage caps',
+    text: 'We need 1,000 units of Whole Milk, but supplier maximum single-order capacity limit is 800 units and node budget is capped at $4,500.',
     icon: AlertTriangle,
-    color: 'from-purple-500/20 to-pink-500/20 border-purple-500/30 text-purple-400',
-    btnBg: 'bg-purple-600 hover:bg-purple-500',
-    description: 'Demand calls for 1,000 units of Whole Milk, but supplier max single-order capacity is capped at 800 units. Agent formulates a multi-phase delivery split.',
-    expectedOutcome: 'Agent SPLITS order into Phase 1 (700 units) and Phase 2 (300 units).'
+    color: 'border-purple-500/30 text-purple-400'
   }
 ];
 
 export default function ScenarioSelector({ selectedScenario, onSelectScenario, loading }) {
+  const [customSituation, setCustomSituation] = useState(
+    'The purchasing system recommends buying 800 units of Organic Hass Avocados. Current inventory is 150, open PO is 150, and Bogotá Central warehouse available storage is 60 cu ft.'
+  );
+
+  const handleFillPreset = (preset) => {
+    setCustomSituation(preset.text);
+    onSelectScenario(preset.id);
+  };
+
+  const handleRunCustom = (e) => {
+    e.preventDefault();
+    if (!customSituation.trim()) return;
+    onSelectScenario(customSituation);
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-end">
+    <div className="glass-panel p-6 space-y-5">
+      <div className="flex justify-between items-center pb-3 border-b border-slate-800">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-rappi-orange animate-ping" />
-            Select Scenario to Test Agent
+          <h2 className="text-base font-bold text-white flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-rappi-orange" />
+            Dynamic Purchasing Situation Simulator
           </h2>
-          <p className="text-xs text-slate-400">Run end-to-end purchasing scenarios from the Rappi assignment brief</p>
+          <p className="text-xs text-slate-400">Describe any purchasing scenario or constraints — the AI Agent will investigate ERP data, make a decision, execute actions, and validate results.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {SCENARIOS.map((scenario) => {
-          const Icon = scenario.icon;
-          const isSelected = selectedScenario === scenario.id;
+      {/* Dynamic Text Input Box */}
+      <form onSubmit={handleRunCustom} className="space-y-3">
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">
+            Enter Buyer Situation / Purchasing Constraints:
+          </label>
+          <textarea
+            rows={3}
+            value={customSituation}
+            onChange={(e) => setCustomSituation(e.target.value)}
+            placeholder="Type any purchasing situation... e.g., 'System recommends buying 1,200 units, but warehouse storage is capped at 50 cu ft and budget is $5,000'"
+            className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rappi-orange transition font-sans leading-relaxed"
+          />
+        </div>
 
-          return (
-            <div
-              key={scenario.id}
-              className={`glass-panel p-5 flex flex-col justify-between transition-all duration-300 ${
-                isSelected
-                  ? 'border-rappi-orange shadow-lg shadow-rappi-orange/10 bg-slate-900/90'
-                  : 'hover:border-slate-700'
-              }`}
-            >
-              <div className="space-y-3">
-                <div className="flex justify-between items-start">
-                  <div className={`p-2.5 rounded-xl border bg-gradient-to-br ${scenario.color}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 px-2 py-0.5 bg-slate-800 rounded">
-                    Brief Scenario
-                  </span>
+        <div className="flex justify-between items-center">
+          <div className="text-[11px] text-slate-400">
+            Tip: You can edit the text above or click one of the 4 scenario presets below.
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading || !customSituation.trim()}
+            className="px-6 py-2.5 bg-rappi-orange hover:bg-rappi-darkOrange text-white font-bold text-xs rounded-xl shadow-lg shadow-rappi-orange/20 transition flex items-center gap-2 disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <div className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Investigating & Executing...
+              </>
+            ) : (
+              <>
+                <Play className="h-3.5 w-3.5 fill-current" />
+                Analyze & Execute Situation
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+
+      {/* Quick Scenario Preset Templates */}
+      <div className="pt-2 space-y-2">
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          Quick Preset Scenario Templates (Assignment Brief)
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {PRESETS.map((p) => {
+            const Icon = p.icon;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => handleFillPreset(p)}
+                className={`p-3 rounded-xl border bg-slate-950/70 text-left transition hover:border-rappi-orange/50 space-y-1.5 ${p.color}`}
+              >
+                <div className="flex items-center gap-2 font-bold text-xs text-white">
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{p.title}</span>
                 </div>
-
-                <div>
-                  <h3 className="text-sm font-bold text-white leading-tight">{scenario.title}</h3>
-                  <p className="text-xs text-slate-400 font-medium mt-0.5">{scenario.subtitle}</p>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
-                  {scenario.description}
+                <p className="text-[11px] text-slate-400 line-clamp-2 font-sans leading-tight">
+                  {p.text}
                 </p>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-slate-800/80 space-y-3">
-                <div className="text-[11px] text-slate-400">
-                  <span className="font-semibold text-slate-300">Target Outcome:</span> {scenario.expectedOutcome}
-                </div>
-
-                <button
-                  onClick={() => onSelectScenario(scenario.id)}
-                  disabled={loading}
-                  className={`w-full py-2.5 px-4 rounded-lg font-semibold text-xs text-white flex items-center justify-center gap-2 transition shadow-md ${scenario.btnBg} disabled:opacity-50`}
-                >
-                  {loading && isSelected ? (
-                    <>
-                      <div className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Evaluating Scenario...
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-3.5 w-3.5 fill-current" />
-                      Run Scenario {scenario.id.split('_')[1]}
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          );
-        })}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

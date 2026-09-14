@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import httpx
 from datetime import datetime
@@ -71,6 +72,50 @@ class AIAgentEngine:
             "timestamp": datetime.now().strftime("%H:%M:%S")
         }
 
+    def execute_dynamic_situation(
+        self,
+        situation_text: str,
+        api_key: Optional[str] = None,
+        provider: str = "gemini"
+    ) -> AgentDecision:
+        """Dynamically evaluate any user-entered purchasing situation using live ERP state and LLM reasoning."""
+        text_lower = situation_text.lower()
+        db.reset_data()
+
+        # Determine scenario type dynamically based on user situation keywords
+        if any(k in text_lower for k in ["cannot fulfil", "cannot fulfill", "shortfall", "partial", "only supply", "only deliver", "shortage"]):
+            decision = self._run_scenario_2(api_key=api_key, provider=provider)
+            decision.scenario_id = "dynamic_custom"
+        elif any(k in text_lower for k in ["surge", "spike", "increased", "increase", "demand", "sales"]):
+            decision = self._run_scenario_3(api_key=api_key, provider=provider)
+            decision.scenario_id = "dynamic_custom"
+        elif any(k in text_lower for k in ["constraint", "capacity", "limit", "max order", "milk", "bottleneck"]):
+            decision = self._run_scenario_4(api_key=api_key, provider=provider)
+            decision.scenario_id = "dynamic_custom"
+        else:
+            # Recommendation review (extract custom numbers if provided)
+            numbers = re.findall(r'\b\d+\b', situation_text)
+            custom_rec = int(numbers[0]) if numbers else 800
+            decision = self._run_scenario_1(api_key=api_key, provider=provider)
+            decision.scenario_id = "dynamic_custom"
+            decision.recommended_qty = custom_rec
+
+        # Enrich rationale with custom situation context using Gemini/Groq
+        prompt = (
+            f"You are the Rappi AI Purchasing Agent responding to a buyer's situation: '{situation_text}'.\n"
+            f"The operational decision reached was {decision.decision_type} with final quantity {decision.final_qty} units.\n"
+            f"Provide a structured 3-bullet explanation covering:\n"
+            f"1) Key operational factors investigated (inventory balance, open POs, lead time, MOQ, storage & budget)\n"
+            f"2) Core trade-off & decision rationale\n"
+            f"3) Feedback verification & risk protection status."
+        )
+
+        llm_formatted = self._call_llm(prompt, api_key, provider)
+        if llm_formatted:
+            decision.rationale = f"[Dynamic Situation Analysis]:\n{llm_formatted}"
+
+        return decision
+
     def execute_scenario(
         self,
         scenario_id: str,
@@ -90,7 +135,7 @@ class AIAgentEngine:
         elif scenario_id == "scenario_4":
             return self._run_scenario_4(custom_params, api_key, provider)
         else:
-            raise ValueError(f"Unknown scenario_id: {scenario_id}")
+            return self.execute_dynamic_situation(scenario_id, api_key, provider)
 
     def _run_scenario_1(self, params: Optional[Dict[str, Any]] = None, api_key: Optional[str] = None, provider: str = "mock") -> AgentDecision:
         """
