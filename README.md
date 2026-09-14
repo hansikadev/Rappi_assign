@@ -8,13 +8,11 @@ A full-stack AI Purchasing Agent system built for quick-commerce and retail supp
 
 A full video walkthrough demonstrating the application in action:
 
-https://github.com/user-attachments/assets/demo_recording.mp4
-
-* **[Direct Video Link / Watch Raw MP4](https://github.com/hansikadev/Rappi_assign/raw/main/demo_recording.mp4)**
-
-<video width="100%" controls>
-  <source src="demo_recording.mp4" type="video/mp4">
+<video src="https://github.com/hansikadev/Rappi_assign/raw/main/demo_recording.mp4" controls="controls" width="100%" style="max-width: 100%;">
+  Your browser does not support the video tag.
 </video>
+
+* **[Direct Video Link / Play Raw MP4](https://github.com/hansikadev/Rappi_assign/raw/main/demo_recording.mp4)**
 
 ---
 
@@ -55,7 +53,7 @@ https://github.com/user-attachments/assets/demo_recording.mp4
 
 ```
 rappi_assign/
-├── demo_recording.mp4                 # Working video demo recording
+├── demo_recording.mp4                 # Working video demo recording (2.1 MB)
 ├── backend/
 │   ├── app/
 │   │   ├── main.py                   # FastAPI application entry point
