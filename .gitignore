@@ -17,6 +17,7 @@ venv/
 backend/venv/
 backend/.venv/
 
-# System files
+# Media & System files
+*.mp4
 .DS_Store
 Thumbs.db
