@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Truck, TrendingUp, AlertTriangle, Play, Sparkles } from 'lucide-react';
 
+const SAMPLE_CHIPS = [
+  "System recommends buying 800 units of Organic Hass Avocados. Check stock (150), open POs (150), and Bogotá Central warehouse space (60 cu ft).",
+  "PO was created for 500 units of avocados, but supplier notifies only 250 units can be supplied. Sourcing from alternate express supplier.",
+  "Sales spiked +180% for Organic Avocados (35 to 98 units/day). Stock cover is down to 3 days. Evaluate emergency replenishment.",
+  "We need 1,000 units of Whole Milk, but supplier max single-order limit is 800 units and node budget is $4,500."
+];
+
 const PRESETS = [
   {
     id: 'scenario_1',
@@ -68,7 +75,25 @@ export default function ScenarioSelector({ selectedScenario, onSelectScenario, l
           />
         </div>
 
-        <div className="flex justify-between items-center">
+        {/* Quick Sample Click Chips */}
+        <div className="space-y-1.5">
+          <div className="text-[10px] uppercase font-bold text-slate-400">Click to fill sample query:</div>
+          <div className="flex flex-wrap gap-2">
+            {SAMPLE_CHIPS.map((chipText, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setCustomSituation(chipText)}
+                className="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-lg text-slate-300 transition text-left cursor-pointer truncate max-w-xs"
+                title={chipText}
+              >
+                Sample {i + 1}: {chipText.substring(0, 38)}...
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center pt-2">
           <div className="text-[11px] text-slate-400">
             Type your custom situation above or select a preset template below.
           </div>
