@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Truck, TrendingUp, AlertTriangle, Play, Sparkles, Send } from 'lucide-react';
+import { ShoppingBag, Truck, TrendingUp, AlertTriangle, Play, Sparkles } from 'lucide-react';
 
 const PRESETS = [
   {
@@ -33,9 +33,7 @@ const PRESETS = [
 ];
 
 export default function ScenarioSelector({ selectedScenario, onSelectScenario, loading }) {
-  const [customSituation, setCustomSituation] = useState(
-    'The purchasing system recommends buying 800 units of Organic Hass Avocados. Current inventory is 150, open PO is 150, and Bogotá Central warehouse available storage is 60 cu ft.'
-  );
+  const [customSituation, setCustomSituation] = useState('');
 
   const handleFillPreset = (preset) => {
     setCustomSituation(preset.text);
@@ -70,14 +68,14 @@ export default function ScenarioSelector({ selectedScenario, onSelectScenario, l
             rows={3}
             value={customSituation}
             onChange={(e) => setCustomSituation(e.target.value)}
-            placeholder="Type any purchasing situation... e.g., 'System recommends buying 1,200 units, but warehouse storage is capped at 50 cu ft and budget is $5,000'"
+            placeholder="Type any purchasing situation here... e.g., 'System recommends buying 1,200 units, but warehouse storage is capped at 50 cu ft and budget is $5,000'"
             className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rappi-orange transition font-sans leading-relaxed"
           />
         </div>
 
         <div className="flex justify-between items-center">
           <div className="text-[11px] text-slate-400">
-            Tip: You can edit the text above or click one of the 4 scenario presets below.
+            Type your own custom scenario above or select a preset template below.
           </div>
 
           <button
