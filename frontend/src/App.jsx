@@ -10,7 +10,6 @@ import { Database, Award, BrainCircuit } from 'lucide-react';
 const API_BASE = 'http://127.0.0.1:8000';
 
 export default function App() {
-  const [apiKey, setApiKey] = useState('');
   const [selectedScenario, setSelectedScenario] = useState('scenario_1');
   const [loading, setLoading] = useState(false);
   const [evalLoading, setEvalLoading] = useState(false);
@@ -45,12 +44,16 @@ export default function App() {
   };
 
   const handleResetData = async () => {
+    setLoading(true);
     try {
       await apiFetch('/api/erp/reset', { method: 'POST' });
       await fetchErpState();
-      setDecision(null);
+      // Re-run scenario 1 after resetting ERP state
+      await runScenario('scenario_1');
     } catch (err) {
       console.error('Failed to reset ERP state:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,8 +66,7 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           scenario_id: scenarioId,
-          api_key: apiKey || null,
-          provider: apiKey ? 'openai' : 'gemini'
+          provider: 'gemini'
         })
       });
 
@@ -106,7 +108,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-rappi-orange selection:text-white">
       {/* Top Header */}
-      <Header apiKey={apiKey} setApiKey={setApiKey} onResetData={handleResetData} />
+      <Header onResetData={handleResetData} />
 
       {/* Navigation Tabs Bar */}
       <div className="bg-slate-950/60 border-b border-slate-800/80 px-6 py-2">
