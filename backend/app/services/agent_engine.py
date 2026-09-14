@@ -46,6 +46,31 @@ class AIAgentEngine:
 
         return None
 
+    def chat_with_agent(self, user_prompt: str, api_key: Optional[str] = None, provider: str = "gemini") -> Dict[str, Any]:
+        """Interactive prompt chat with the AI purchasing agent using ERP telemetry."""
+        # Gather live ERP context
+        products_summary = [f"{p.name} (Stock: {p.current_stock}, Demand: {p.avg_daily_demand}/day, Vol: {p.unit_volume_cu_ft} cu ft)" for p in db.products.values()]
+        nodes_summary = [f"{n.name} (Avail Space: {n.available_storage_cu_ft} cu ft, Budget: ${n.available_budget})" for n in db.fulfillment_nodes.values()]
+
+        full_prompt = (
+            f"You are the Rappi AI Purchasing Agent assisting a retail buyer.\n"
+            f"CURRENT OPERATIONAL STATE:\n"
+            f"- Products: {', '.join(products_summary)}\n"
+            f"- Warehouses: {', '.join(nodes_summary)}\n\n"
+            f"BUYER INSTRUCTION / QUESTION: '{user_prompt}'\n\n"
+            f"Provide a clear, professional purchasing decision and recommendation in 2-3 sentences based on warehouse space, inventory cover, and budget."
+        )
+
+        llm_reply = self._call_llm(full_prompt, api_key, provider)
+        if not llm_reply:
+            llm_reply = f"Analyzed query regarding '{user_prompt}'. Recommended action: Review Bogotá Central inventory balance ({db.products['PROD-AVO-01'].current_stock} units) and respect current node storage limit of {db.fulfillment_nodes['NODE-BOGOTA-CENTRAL'].available_storage_cu_ft} cu ft."
+
+        return {
+            "prompt": user_prompt,
+            "reply": llm_reply,
+            "timestamp": datetime.now().strftime("%H:%M:%S")
+        }
+
     def execute_scenario(
         self,
         scenario_id: str,

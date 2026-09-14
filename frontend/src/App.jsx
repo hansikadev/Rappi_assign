@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import ScenarioSelector from './components/ScenarioSelector';
+import AgentChatBox from './components/AgentChatBox';
 import DecisionView from './components/DecisionView';
 import FeedbackLoopView from './components/FeedbackLoopView';
 import InventoryDashboard from './components/InventoryDashboard';
@@ -168,6 +169,9 @@ export default function App() {
               onSelectScenario={runScenario}
               loading={loading}
             />
+
+            {/* Interactive Buyer Copilot Chat Box */}
+            <AgentChatBox apiFetch={apiFetch} />
 
             {/* Executive Decision Summary Card */}
             {decision && <DecisionView decision={decision} />}

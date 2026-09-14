@@ -7,6 +7,22 @@ from app.services.erp_mock import db
 
 router = APIRouter(prefix="/api")
 
+@router.post("/agent/chat")
+def chat_with_agent_endpoint(payload: dict = Body(...)):
+    """Interactive prompt chat with AI purchasing agent."""
+    try:
+        user_prompt = payload.get("prompt", "")
+        provider = payload.get("provider", "gemini")
+        api_key = payload.get("api_key")
+
+        if not user_prompt:
+            raise HTTPException(status_code=400, detail="Prompt is required")
+
+        result = agent_engine.chat_with_agent(user_prompt, api_key=api_key, provider=provider)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.post("/agent/run")
 def run_agent_scenario(payload: dict = Body(...)):
     """Trigger AI purchasing agent execution for a selected scenario."""
