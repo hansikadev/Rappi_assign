@@ -4,6 +4,15 @@ A full-stack AI Purchasing Agent system built for quick-commerce and retail supp
 
 ---
 
+## 🎥 Working Demo Recording
+
+A full video walkthrough demonstrating the application in action:
+* **[Watch Demo Recording Video](demo_recording.mp4)**
+
+https://github.com/user-attachments/assets/demo_recording.mp4
+
+---
+
 ## 🌟 Key System Highlights & Architecture
 
 ```
@@ -41,13 +50,14 @@ A full-stack AI Purchasing Agent system built for quick-commerce and retail supp
 
 ```
 rappi_assign/
+├── demo_recording.mp4                 # Working video demo recording
 ├── backend/
 │   ├── app/
 │   │   ├── main.py                   # FastAPI application entry point
 │   │   ├── api/
 │   │   │   └── routes.py             # Agent execution, ERP state & Evaluation endpoints
 │   │   ├── models/
-│   │   │   └── schemas.py            # Pydantic schemas (PO, Product, Constraints, Decision, Evaluation)
+│   │   │   └── schemas.py            # Dataclass schemas (PO, Product, Constraints, Decision, Evaluation)
 │   │   └── services/
 │   │       ├── agent_engine.py       # Agent tool calling & reasoning engine
 │   │       ├── erp_mock.py           # Stateful Mock ERP (Inventory, Suppliers, POs, Warehouses)
@@ -59,8 +69,8 @@ rappi_assign/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── Header.jsx            # Top navigation & LLM API key modal
-│   │   │   ├── ScenarioSelector.jsx  # Interactive runner cards for Scenarios 1-4
-│   │   │   ├── AgentTrace.jsx        # Step-by-step visual trace of agent thoughts & tool calls
+│   │   │   ├── ScenarioSelector.jsx  # Dynamic purchasing simulator & presets
+│   │   │   ├── AgentChatBox.jsx      # Interactive buyer copilot chat input
 │   │   │   ├── DecisionView.jsx      # Decision rationale, quantity delta & created POs
 │   │   │   ├── FeedbackLoopView.jsx  # Outcome verification matrix & auto-correction alerts
 │   │   │   ├── InventoryDashboard.jsx# Real-time ERP state & warehouse capacity gauges
