@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import ScenarioSelector from './components/ScenarioSelector';
 import AgentChatBox from './components/AgentChatBox';
@@ -18,6 +18,8 @@ export default function App() {
   const [erpState, setErpState] = useState(null);
   const [evaluations, setEvaluations] = useState(null);
   const [activeTab, setActiveTab] = useState('agent'); // 'agent' | 'erp' | 'evals'
+
+  const decisionRef = useRef(null);
 
   // Helper fetch method with fallback to direct backend URL
   const apiFetch = async (path, options = {}) => {
@@ -75,6 +77,13 @@ export default function App() {
         const data = await res.json();
         setDecision(data);
         await fetchErpState();
+
+        // Smooth scroll to decision output view
+        setTimeout(() => {
+          if (decisionRef.current) {
+            decisionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
       } else {
         console.error('API Error:', res.status, await res.text());
       }
@@ -163,21 +172,21 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
         {activeTab === 'agent' && (
           <>
-            {/* Scenario Trigger Cards */}
+            {/* Scenario Trigger & Dynamic Situation Simulator Cards */}
             <ScenarioSelector
               selectedScenario={selectedScenario}
               onSelectScenario={runScenario}
               loading={loading}
             />
 
+            {/* Decision Output View (Positioned directly under simulator with auto-scroll) */}
+            <div ref={decisionRef} className="space-y-6">
+              {decision && <DecisionView decision={decision} />}
+              {decision?.validation && <FeedbackLoopView validation={decision.validation} />}
+            </div>
+
             {/* Interactive Buyer Copilot Chat Box */}
             <AgentChatBox apiFetch={apiFetch} />
-
-            {/* Executive Decision Summary Card */}
-            {decision && <DecisionView decision={decision} />}
-
-            {/* Post-Action Feedback Validation Card */}
-            {decision?.validation && <FeedbackLoopView validation={decision.validation} />}
           </>
         )}
 
